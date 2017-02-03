@@ -12,7 +12,7 @@ export class CalendarNativeDateFormatter implements CalendarDateFormatterInterfa
    * The month view header week day labels
    */
   public monthViewColumnHeader({date, locale}: DateFormatterParams): string {
-    return new Intl.DateTimeFormat(locale, {weekday: 'long'}).format(date);
+      return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(date).substring(0, 4);
   }
 
   /**
@@ -33,7 +33,7 @@ export class CalendarNativeDateFormatter implements CalendarDateFormatterInterfa
    * The week view header week day labels
    */
   public weekViewColumnHeader({date, locale}: DateFormatterParams): string {
-    return new Intl.DateTimeFormat(locale, {weekday: 'long'}).format(date);
+      return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(date).substring(0, 4);
   }
 
   /**

@@ -14,11 +14,17 @@
     text-overflow: ellipsis;
     display: block;
     white-space: nowrap;
+    text-align: left;
   }
 
   .cal-cell-row .cal-cell:hover,
   .cal-cell.cal-has-events.cal-open {
-    background-color: #ededed;
+    background-color: transparent;
+    box-shadow: inset 1px 1px #00bcd4, inset -1px -1px #00bcd4;
+  }
+  
+  .cal-header .cal-cell:hover {
+    box-shadow:none!important;
   }
 
   .cal-days {
@@ -43,7 +49,7 @@
   }
 
   .cal-day-cell {
-    min-height: 100px;
+    min-height: 150px;
   }
 
   .cal-day-cell:not(:last-child) {
@@ -58,7 +64,7 @@
     margin-top: 18px;
     margin-left: 10px;
     background-color: #b94a48;
-    display: inline-block;
+    display: none;
     min-width: 10px;
     padding: 3px 7px;
     font-size: 12px;
@@ -76,8 +82,8 @@
     font-weight: 400;
     opacity: 0.5;
     margin-top: 15px;
-    margin-right: 15px;
-    float: right;
+    margin-left: 15px;
+    float: left;
     margin-bottom: 10px;
   }
 
@@ -91,10 +97,12 @@
   }
 
   .cal-event {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
+    width: 100%;
+    height: 21px;
+    border-radius: 2px;
+    color: white;
+    display: flex;
+    align-items: center;
     margin: 2px;
   }
 
@@ -112,7 +120,7 @@
   }
 
   .cal-day-cell.cal-today {
-    background-color: #e8fde7;
+    background-color: transparent;
   }
 
   .cal-day-cell.cal-today .cal-day-number {

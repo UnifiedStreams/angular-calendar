@@ -2,14 +2,14 @@
   .cal-day-headers {
     display: flex;
     margin-bottom: 3px;
-    border: 1px solid #e1e1e1;
+    border: none;
     margin-left: 2px;
     margin-right: 2px;
   }
 
   .cal-day-headers .cal-header {
     flex: 1;
-    text-align: center;
+    text-align: left;
     padding: 5px;
   }
 
@@ -24,6 +24,10 @@
   .cal-day-headers span {
     font-weight: 400;
     opacity: 0.5;
+    text-align:left;
+    width:100%;
+    display:inline-block;
+    font-size:50px;
   }
 
   .cal-event-container {
@@ -54,7 +58,7 @@
   }
 
   .cal-header.cal-today {
-    background-color: #e8fde7;
+    background-color: transparent;
   }
 
   .cal-header.cal-weekend span {
