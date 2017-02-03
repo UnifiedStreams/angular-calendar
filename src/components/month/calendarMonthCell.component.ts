@@ -22,7 +22,12 @@ import { MonthViewDay, CalendarEvent } from 'calendar-utils';
         (click)="$event.stopPropagation(); eventClicked.emit({event: event})">
         {{(event.title.length>20)?event.title.substring(0,20) + '...' : event.title}}
       </div>
-     <div class="cal-event" style="background-color:transparent; color:rgba(0,0,0,.54);" *ngIf="day.events.length > 3">{{day.events.length - 2 + ' More'}}</div>
+      <div 
+	class="cal-event" 
+	style="background-color:transparent; color:rgba(0,0,0,.54);" 
+	*ngIf="day.events.length > 3">
+	{{day.events.length - 2 + ' More'}}
+      </div>
     </div>
   `,
   host: {
