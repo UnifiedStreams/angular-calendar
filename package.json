@@ -1,5 +1,5 @@
 {
-  "name": "angular-calendar",
+  "name": "unifiedstreams-angular-calendar",
   "version": "0.7.2",
   "description": "A calendar component that can display events on a month, week or day view",
   "main": "./dist/umd/angular-calendar.js",
@@ -27,18 +27,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattlewis92/angular-calendar.git"
+    "url": "git+https://github.com/UnifiedStreams/angular-calendar.git"
   },
   "keywords": [
     "angular2",
     "calendar"
   ],
   "author": "Matt Lewis",
+  "contributors": ["Brandon Staley"],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mattlewis92/angular-calendar/issues"
+    "url": "https://github.com/UnifiedStreams/angular-calendar/issues"
   },
-  "homepage": "https://github.com/mattlewis92/angular-calendar#readme",
+  "homepage": "https://github.com/UnifiedStreams/angular-calendar#readme",
   "devDependencies": {
     "@angular/common": "^2.3.1",
     "@angular/compiler": "^2.3.1",
