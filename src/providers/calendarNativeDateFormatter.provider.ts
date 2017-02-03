@@ -41,8 +41,7 @@ export class CalendarNativeDateFormatter implements CalendarDateFormatterInterfa
    */
   public weekViewColumnSubHeader({date, locale}: DateFormatterParams): string {
     return new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      month: 'short'
+      day: 'numeric'
     }).format(date);
   }
 
