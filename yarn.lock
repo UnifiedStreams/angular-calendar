@@ -76,12 +76,6 @@
   version "0.9.35"
   resolved "https://registry.yarnpkg.com/@types/core-js/-/core-js-0.9.35.tgz#444064e63711cdcc62ea844d27642f6efc2285f2"
 
-"@types/extract-text-webpack-plugin@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@types/extract-text-webpack-plugin/-/extract-text-webpack-plugin-2.0.0.tgz#7dfb884827e503660a4fc7cc7ac1bef0e212cc2a"
-  dependencies:
-    "@types/webpack" "*"
-
 "@types/highlight.js@^9.1.9":
   version "9.1.9"
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.1.9.tgz#ed6336955eaf233b75eb7923b9b1f373d045ef01"
@@ -123,7 +117,7 @@
   dependencies:
     "@types/source-map" "*"
 
-"@types/webpack@*", "@types/webpack@^2.2.0":
+"@types/webpack@^2.2.0":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-2.2.5.tgz#fdd98f969ba5da0d548c2a3c05a1975c9107cc05"
   dependencies:
@@ -6095,6 +6089,18 @@ wbuf@^1.1.0, wbuf@^1.4.0:
   dependencies:
     minimalistic-assert "^1.0.0"
 
+webpack-angular-externals@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/webpack-angular-externals/-/webpack-angular-externals-1.0.2.tgz#cdcfe9496a3c5f46551441e9fcd3223c4be802d2"
+  dependencies:
+    lodash.camelcase "^4.3.0"
+
+webpack-date-fns-externals@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/webpack-date-fns-externals/-/webpack-date-fns-externals-1.0.2.tgz#7a794c567018b1d928e9ecd800d855b4054bed6d"
+  dependencies:
+    lodash.camelcase "^4.3.0"
+
 webpack-dev-middleware@^1.0.11, webpack-dev-middleware@^1.9.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-1.10.0.tgz#7d5be2651e692fddfafd8aaed177c16ff51f0eb8"
@@ -6129,6 +6135,10 @@ webpack-dev-server@^2.2.0:
 webpack-fix-default-import-plugin@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/webpack-fix-default-import-plugin/-/webpack-fix-default-import-plugin-1.0.1.tgz#ae9ecae2a0f8bd86709d1098c8891e3e7fc2f942"
+
+webpack-rxjs-externals@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/webpack-rxjs-externals/-/webpack-rxjs-externals-1.0.0.tgz#aeb3a8d87c77be611856f47d0fade02e86247bbc"
 
 webpack-sources@^0.1.0, webpack-sources@^0.1.4:
   version "0.1.4"
