@@ -14,6 +14,10 @@
     height: 30px;
   }
 
+  .cal-hour-segment::after {
+    content: '\00a0';
+  }
+
   .cal-hour:not(:last-child) .cal-hour-segment,
   .cal-hour:last-child :not(:last-child) .cal-hour-segment {
     border-bottom: thin dashed #e1e1e1;
@@ -26,18 +30,29 @@
     text-align: center;
   }
 
-  .cal-hour-segment:hover {
+  .cal-hour-segment.cal-after-hour-start {
+    .cal-time {
+      display: none;
+    }
+  }
+
+  .cal-hour-segment:hover,
+  .cal-drag-over .cal-hour-segment {
     background-color: #ededed;
   }
 
-  .cal-event {
+  .cal-event-container {
     position: absolute;
+  }
+
+  .cal-event {
     border: solid 1px;
     padding: 5px;
     font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    height: 100%;
   }
 
   .cal-draggable {

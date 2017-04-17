@@ -1,19 +1,22 @@
 import {
   Component,
   Input,
+  Output,
+  EventEmitter,
+  TemplateRef
+} from '@angular/core';
+import {
   trigger,
   style,
   transition,
-  animate,
-  Output,
-  EventEmitter
-} from '@angular/core';
+  animate
+} from '@angular/animations';
 import { CalendarEvent } from 'calendar-utils';
 
 @Component({
   selector: 'mwl-calendar-open-day-events',
   template: `
-    <div class="cal-open-day-events" [@collapse] *ngIf="isOpen">
+    <ng-template #defaultTemplate>
       <div
         *ngFor="let event of events"
         [ngClass]="event?.cssClass"
@@ -31,6 +34,15 @@ import { CalendarEvent } from 'calendar-utils';
         </mwl-calendar-event-title>
         <mwl-calendar-event-actions [event]="event"></mwl-calendar-event-actions>
       </div>
+    </ng-template>
+    <div class="cal-open-day-events" [@collapse] *ngIf="isOpen">
+      <ng-template
+        [ngTemplateOutlet]="customTemplate || defaultTemplate"
+        [ngTemplateOutletContext]="{
+          events: events,
+          eventClicked: eventClicked
+        }">
+      </ng-template>
     </div>
   `,
   animations: [
@@ -51,6 +63,8 @@ export class CalendarOpenDayEventsComponent {
   @Input() isOpen: boolean = false;
 
   @Input() events: CalendarEvent[];
+
+  @Input() customTemplate: TemplateRef<any>;
 
   @Output() eventClicked: EventEmitter<{event: CalendarEvent}> = new EventEmitter<{event: CalendarEvent}>();
 

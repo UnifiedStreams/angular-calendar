@@ -8,7 +8,8 @@ import {
   OnInit,
   OnDestroy,
   LOCALE_ID,
-  Inject
+  Inject,
+  TemplateRef
 } from '@angular/core';
 import {
   CalendarEvent,
@@ -34,7 +35,7 @@ import { CalendarEventTimesChangedEvent } from '../../interfaces/calendarEventTi
 /**
  * Shows all events on a given month. Example usage:
  *
- * ```
+ * ```typescript
  * &lt;mwl-calendar-month-view
  *  [viewDate]="viewDate"
  *  [events]="events"&gt;
@@ -45,21 +46,22 @@ import { CalendarEventTimesChangedEvent } from '../../interfaces/calendarEventTi
   selector: 'mwl-calendar-month-view',
   template: `
     <div class="cal-month-view">
-      <div class="cal-cell-row cal-header">
-        <div class="cal-cell" *ngFor="let header of columnHeaders">
-          {{ header.date | calendarDate:'monthViewColumnHeader':locale }}
-        </div>
-      </div>
+      <mwl-calendar-month-view-header
+        [days]="columnHeaders"
+        [locale]="locale"
+        [customTemplate]="headerTemplate">
+      </mwl-calendar-month-view-header>
       <div class="cal-days">
         <div *ngFor="let rowIndex of view.rowOffsets">
           <div class="cal-cell-row">
             <mwl-calendar-month-cell
-              *ngFor="let day of view.days | slice : rowIndex : rowIndex + 7"
+              *ngFor="let day of view.days | slice : rowIndex : rowIndex + (view.totalDaysVisibleInWeek)"
               [class.cal-drag-over]="day.dragOver"
               [day]="day"
               [openDay]="openDay"
               [locale]="locale"
               [tooltipPlacement]="tooltipPlacement"
+              [customTemplate]="cellTemplate"
               (click)="dayClicked.emit({day: day})"
               (highlightDay)="toggleDayHighlight($event.event, true)"
               (unhighlightDay)="toggleDayHighlight($event.event, false)"
@@ -73,6 +75,7 @@ import { CalendarEventTimesChangedEvent } from '../../interfaces/calendarEventTi
           <mwl-calendar-open-day-events
             [isOpen]="openRowIndex === rowIndex"
             [events]="openDay?.events"
+            [customTemplate]="openDayEventsTemplate"
             (eventClicked)="eventClicked.emit({event: $event.event})">
           </mwl-calendar-open-day-events>
         </div>
@@ -91,6 +94,11 @@ export class CalendarMonthViewComponent implements OnChanges, OnInit, OnDestroy 
    * An array of events to display on view
    */
   @Input() events: CalendarEvent[] = [];
+
+  /**
+   * An array of day indexes (0 = sunday, 1 = monday etc) that will be hidden on the view
+   */
+  @Input() excludeDays: number[] = [];
 
   /**
    * Whether the events list for the day of the `viewDate` option is visible or not
@@ -122,6 +130,21 @@ export class CalendarMonthViewComponent implements OnChanges, OnInit, OnDestroy 
    * The start number of the week
    */
   @Input() weekStartsOn: number;
+
+  /**
+   * A custom template to use to replace the header
+   */
+  @Input() headerTemplate: TemplateRef<any>;
+
+  /**
+   * A custom template to use to replace the day cell
+   */
+  @Input() cellTemplate: TemplateRef<any>;
+
+  /**
+   * A custom template to use to replace the day cell
+   */
+  @Input() openDayEventsTemplate: TemplateRef<any>;
 
   /**
    * Called when the day cell is clicked
@@ -177,7 +200,7 @@ export class CalendarMonthViewComponent implements OnChanges, OnInit, OnDestroy 
     if (this.refresh) {
       this.refreshSubscription = this.refresh.subscribe(() => {
         this.refreshAll();
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       });
     }
   }
@@ -187,18 +210,17 @@ export class CalendarMonthViewComponent implements OnChanges, OnInit, OnDestroy 
    */
   ngOnChanges(changes: any): void {
 
-    if (changes.viewDate) {
+    if (changes.viewDate || changes.excludeDays) {
       this.refreshHeader();
     }
 
-    if (changes.viewDate || changes.events) {
+    if (changes.viewDate || changes.events || changes.excludeDays) {
       this.refreshBody();
     }
 
-    if (changes.activeDayIsOpen || changes.viewDate || changes.events) {
+    if (changes.activeDayIsOpen || changes.viewDate || changes.events || changes.excludeDays) {
       this.checkActiveDayIsOpen();
     }
-
   }
 
   /**
@@ -242,7 +264,8 @@ export class CalendarMonthViewComponent implements OnChanges, OnInit, OnDestroy 
   private refreshHeader(): void {
     this.columnHeaders = getWeekViewHeader({
       viewDate: this.viewDate,
-      weekStartsOn: this.weekStartsOn
+      weekStartsOn: this.weekStartsOn,
+      excluded: this.excludeDays
     });
   }
 
@@ -250,7 +273,8 @@ export class CalendarMonthViewComponent implements OnChanges, OnInit, OnDestroy 
     this.view = getMonthView({
       events: this.events,
       viewDate: this.viewDate,
-      weekStartsOn: this.weekStartsOn
+      weekStartsOn: this.weekStartsOn,
+      excluded: this.excludeDays
     });
     if (this.dayModifier) {
       this.view.days.forEach(day => this.dayModifier(day));
@@ -261,7 +285,7 @@ export class CalendarMonthViewComponent implements OnChanges, OnInit, OnDestroy 
     if (this.activeDayIsOpen === true) {
       this.openDay = this.view.days.find(day => isSameDay(day.date, this.viewDate));
       const index: number = this.view.days.indexOf(this.openDay);
-      this.openRowIndex = Math.floor(index / 7) * 7;
+      this.openRowIndex = Math.floor(index / this.view.totalDaysVisibleInWeek) * this.view.totalDaysVisibleInWeek;
     } else {
       this.openRowIndex = null;
       this.openDay = null;

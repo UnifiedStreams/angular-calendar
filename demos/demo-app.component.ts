@@ -80,7 +80,8 @@ const dependencyVersions: any = {
   zoneJs: require('zone.js/package.json').version,
   reflectMetadata: require('reflect-metadata/package.json').version,
   ngBootstrap: require('@ng-bootstrap/ng-bootstrap/package.json').version,
-  rrule: require('rrule/package.json').version
+  rrule: require('rrule/package.json').version,
+  ngxContextmenu: require('ngx-contextmenu/package.json').version
 };
 
 @Component({
@@ -90,7 +91,6 @@ const dependencyVersions: any = {
 })
 export class DemoAppComponent {
 
-  activeTabIndex: number = 0;
   demos: Demo[] = [];
   activeDemo: Demo;
 
@@ -104,7 +104,6 @@ export class DemoAppComponent {
       .filter(event => event instanceof NavigationEnd)
       .subscribe((event: NavigationEnd) => {
         this.activeDemo = this.demos.find(demo => `/${demo.path}` === event.urlAfterRedirects);
-        this.activeTabIndex = 0;
       });
 
   }

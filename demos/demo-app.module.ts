@@ -7,8 +7,10 @@ import 'intl/locale-data/jsonp/en';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as hljs from 'highlight.js';
 import { HighlightJsModule } from 'angular-highlight-js';
+import { NgbTabsetModule } from '@ng-bootstrap/ng-bootstrap';
 import { DemoAppComponent } from './demo-app.component';
 import * as kitchenSink from './demo-modules/kitchen-sink';
 import * as asyncEvents from './demo-modules/async-events';
@@ -34,11 +36,18 @@ import * as disableTooltips from './demo-modules/disable-tooltips';
 import * as additionalEventProperties from './demo-modules/additional-event-properties';
 import * as selectableMonthDay from './demo-modules/selectable-month-day';
 import * as minMaxDate from './demo-modules/min-max-date';
+import * as excludeDays from './demo-modules/exclude-days';
+import * as refreshingTheView from './demo-modules/refreshing-the-view';
+import * as customTemplates from './demo-modules/custom-templates';
+import * as groupMonthViewEvents from './demo-modules/group-month-view-events';
+import * as contextMenu from './demo-modules/context-menu';
 
 @NgModule({
   declarations: [DemoAppComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
+    NgbTabsetModule.forRoot(),
     HighlightJsModule.forRoot(hljs),
     kitchenSink.DemoModule,
     asyncEvents.DemoModule,
@@ -64,6 +73,11 @@ import * as minMaxDate from './demo-modules/min-max-date';
     additionalEventProperties.DemoModule,
     selectableMonthDay.DemoModule,
     minMaxDate.DemoModule,
+    excludeDays.DemoModule,
+    refreshingTheView.DemoModule,
+    customTemplates.DemoModule,
+    groupMonthViewEvents.DemoModule,
+    contextMenu.DemoModule,
     RouterModule.forRoot([{
       path: 'kitchen-sink',
       component: kitchenSink.DemoComponent,
@@ -155,6 +169,12 @@ import * as minMaxDate from './demo-modules/min-max-date';
         label: 'Day modifier'
       }
     }, {
+      path: 'exclude-days',
+      component: excludeDays.DemoComponent,
+      data: {
+        label: 'Exclude Weekends'
+      }
+    }, {
       path: 'i18n',
       component: i18n.DemoComponent,
       data: {
@@ -207,6 +227,30 @@ import * as minMaxDate from './demo-modules/min-max-date';
       component: minMaxDate.DemoComponent,
       data: {
         label: 'Min max date'
+      }
+    }, {
+      path: 'refreshing-the-view',
+      component: refreshingTheView.DemoComponent,
+      data: {
+        label: 'Refreshing the view'
+      }
+    }, {
+      path: 'custom-templates',
+      component: customTemplates.DemoComponent,
+      data: {
+        label: 'Custom templates'
+      }
+    }, {
+      path: 'group-month-view-events',
+      component: groupMonthViewEvents.DemoComponent,
+      data: {
+        label: 'Group month view events'
+      }
+    }, {
+      path: 'context-menu',
+      component: contextMenu.DemoComponent,
+      data: {
+        label: 'Context menu'
       }
     }, {
       path: '**',

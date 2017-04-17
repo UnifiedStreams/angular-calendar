@@ -1,16 +1,17 @@
 import * as path from 'path';
 import * as webpack from 'webpack';
 import { TsConfigPathsPlugin, CheckerPlugin } from 'awesome-typescript-loader';
-const StyleLintPlugin = require('stylelint-webpack-plugin');
-const FixDefaultImportPlugin = require('webpack-fix-default-import-plugin');
+import * as StyleLintPlugin from 'stylelint-webpack-plugin';
+import * as FixDefaultImportPlugin from 'webpack-fix-default-import-plugin';
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
+
 const IS_PROD = process.argv.indexOf('-p') > -1;
 
 export default {
   devtool: IS_PROD ? 'source-map' : 'eval',
-  entry: __dirname + '/demos/entry.ts',
+  entry: path.join(__dirname, 'demos', 'entry.ts'),
   output: {
-    filename: 'demos.js',
-    path: IS_PROD ? __dirname + '/demos' : __dirname
+    filename: IS_PROD ? '[name]-[chunkhash].js' : '[name].js'
   },
   module: {
     rules: [{
@@ -35,7 +36,7 @@ export default {
       test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
       loader: 'file-loader'
     }, {
-      test: /demos\/.+\.(css|html)$/,
+      test: /demos[\/\\].+\.(css|html)$/,
       loader: 'raw-loader'
     }, {
       test: /\.ejs$/,
@@ -52,13 +53,12 @@ export default {
     port: 8000,
     inline: true,
     hot: true,
-    historyApiFallback: true,
-    contentBase: 'demos'
+    historyApiFallback: true
   },
   plugins: [
     new CheckerPlugin(),
     new TsConfigPathsPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    ...(IS_PROD ? [] : [new webpack.HotModuleReplacementPlugin()]),
     new webpack.DefinePlugin({
       ENV: JSON.stringify(IS_PROD ? 'production' : 'development')
     }),
@@ -67,12 +67,12 @@ export default {
       context: 'scss'
     }),
     new webpack.ContextReplacementPlugin(
-      /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+      /angular(\\|\/)core(\\|\/)@angular/,
       __dirname + '/src'
     ),
-    new FixDefaultImportPlugin()
-  ],
-  performance: {
-    hints: false
-  }
+    new FixDefaultImportPlugin(),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'demos', 'index.ejs')
+    })
+  ]
 };

@@ -13,17 +13,24 @@ import {
   CalendarModule,
   MOMENT,
   CalendarEventTimesChangedEvent
-} from './../src';
-import { CalendarWeekViewComponent } from './../src/components/week/calendarWeekView.component';
-import { DraggableHelper } from 'angular-draggable-droppable';
-import { Subject } from 'rxjs/Rx';
-import { triggerDomEvent } from './util';
+} from '../src';
+import { CalendarWeekViewComponent } from '../src/components/week/calendarWeekView.component';
+import { DraggableHelper, DragAndDropModule } from 'angular-draggable-droppable';
+import { Subject } from 'rxjs/Subject';
+import * as sinon from 'sinon';
+import { triggerDomEvent, ExternalEventComponent } from './util';
 
 describe('calendarWeekView component', () => {
 
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [CalendarModule]});
-    TestBed.configureCompiler({
+    TestBed.configureTestingModule({
+      imports: [
+        CalendarModule,
+        DragAndDropModule
+      ],
+      declarations: [
+        ExternalEventComponent
+      ],
       providers: [
         CalendarEventTitleFormatter,
         DraggableHelper,
@@ -44,6 +51,32 @@ describe('calendarWeekView component', () => {
     fixture.componentInstance.ngOnChanges({viewDate: {}});
     expect(fixture.componentInstance.days.length).to.equal(7);
     expect(fixture.componentInstance.days[0].date).to.deep.equal(moment('2016-06-26').toDate());
+  });
+
+  it('should generate the week view without excluded days', () => {
+    const fixture: ComponentFixture<CalendarWeekViewComponent> = TestBed.createComponent(CalendarWeekViewComponent);
+    fixture.componentInstance.viewDate = new Date('2016-06-29');
+    fixture.componentInstance.excludeDays = [0, 6];
+    fixture.componentInstance.ngOnChanges({viewDate: {}});
+    expect(fixture.componentInstance.days.length).to.equal(5);
+    fixture.destroy();
+  });
+
+  it('should update the week view when excluded days changed', () => {
+    const fixture: ComponentFixture<CalendarWeekViewComponent> = TestBed.createComponent(CalendarWeekViewComponent);
+    fixture.componentInstance.viewDate = new Date('2016-06-29');
+    fixture.componentInstance.excludeDays = [0, 6];
+    fixture.componentInstance.ngOnChanges({excludeDays: {}});
+    expect(fixture.componentInstance.days.length).to.equal(5);
+    expect(fixture.nativeElement.querySelector('.cal-weekend')).to.be.null;
+
+    fixture.componentInstance.excludeDays = [1];
+    fixture.componentInstance.ngOnChanges({excludeDays: []});
+    fixture.detectChanges();
+    expect(fixture.componentInstance.days.length).to.equal(6);
+    expect(fixture.nativeElement.querySelector('.cal-weekend')).not.to.be.null;
+
+    fixture.destroy();
   });
 
   it('should emit on the dayClicked output', () => {
@@ -309,6 +342,9 @@ describe('calendarWeekView component', () => {
     fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}});
     fixture.detectChanges();
     document.body.appendChild(fixture.nativeElement);
+    // remove the header as it was causing the test to fail
+    const header: HTMLElement = fixture.nativeElement.querySelector('.cal-day-headers');
+    header.parentNode.removeChild(header);
     const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event-container');
     const dayWidth: number = event.parentElement.offsetWidth / 7;
     const eventPosition: ClientRect = event.getBoundingClientRect();
@@ -391,6 +427,42 @@ describe('calendarWeekView component', () => {
     triggerDomEvent('mouseup', document.body, {clientX: rect.left - (dayWidth * 2), clientY: rect.top});
     fixture.detectChanges();
     fixture.destroy();
+  });
+
+  it('should allow external events to be dropped on the week view headers', () => {
+    const fixture: ComponentFixture<CalendarWeekViewComponent> = TestBed.createComponent(CalendarWeekViewComponent);
+    fixture.componentInstance.viewDate = new Date('2016-06-27');
+    fixture.componentInstance.events = [];
+    fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}});
+    fixture.detectChanges();
+    document.body.appendChild(fixture.nativeElement);
+
+    const externalEventFixture: ComponentFixture<ExternalEventComponent> = TestBed.createComponent(ExternalEventComponent);
+    externalEventFixture.detectChanges();
+    document.body.appendChild(externalEventFixture.nativeElement);
+
+    const event: HTMLElement = externalEventFixture.nativeElement.querySelector('.external-event');
+    const eventPosition: ClientRect = event.getBoundingClientRect();
+
+    const headers: any[] = Array.from(fixture.nativeElement.querySelectorAll('.cal-header'));
+    const header: HTMLElement = headers[2];
+    const headerPosition: ClientRect = header.getBoundingClientRect();
+
+    const eventDropped: sinon.SinonSpy = sinon.spy();
+    fixture.componentInstance.eventTimesChanged.subscribe(eventDropped);
+    triggerDomEvent('mousedown', event, {clientY: eventPosition.top, clientX: eventPosition.left});
+    fixture.detectChanges();
+    triggerDomEvent('mousemove', document.body, {clientY: headerPosition.top, clientX: headerPosition.left});
+    fixture.detectChanges();
+    expect(header.classList.contains('cal-drag-over')).to.be.true;
+    triggerDomEvent('mouseup', document.body, {clientY: headerPosition.top, clientX: headerPosition.left});
+    fixture.detectChanges();
+    fixture.destroy();
+    externalEventFixture.destroy();
+    expect(eventDropped).to.have.been.calledWith({
+      event: externalEventFixture.componentInstance.event,
+      newStart: moment('2016-06-27').startOf('week').add(2, 'days').toDate()
+    });
   });
 
 });

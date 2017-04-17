@@ -8,7 +8,8 @@ import {
   OnInit,
   OnDestroy,
   LOCALE_ID,
-  Inject
+  Inject,
+  TemplateRef
 } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
@@ -29,7 +30,7 @@ import { CalendarEventTimesChangedEvent } from '../../interfaces/calendarEventTi
 /**
  * Shows all events on a given week. Example usage:
  *
- * ```
+ * ```typescript
  * &lt;mwl-calendar-week-view
  *  [viewDate]="viewDate"
  *  [events]="events"&gt;
@@ -40,22 +41,21 @@ import { CalendarEventTimesChangedEvent } from '../../interfaces/calendarEventTi
   selector: 'mwl-calendar-week-view',
   template: `
     <div class="cal-week-view" #weekViewContainer>
-      <div class="cal-day-headers">
-        <mwl-calendar-week-view-header
-          *ngFor="let day of days"
-          [day]="day"
-          [locale]="locale"
-          (click)="dayClicked.emit({date: day.date})">
-        </mwl-calendar-week-view-header>
-      </div>
+      <mwl-calendar-week-view-header
+        [days]="days"
+        [locale]="locale"
+        [customTemplate]="headerTemplate"
+        (dayClicked)="dayClicked.emit($event)"
+        (eventDropped)="eventTimesChanged.emit($event)">
+      </mwl-calendar-week-view-header>
       <div *ngFor="let eventRow of eventRows" #eventRowContainer>
         <div
           class="cal-event-container"
           #event
           [class.cal-draggable]="weekEvent.event.draggable"
           *ngFor="let weekEvent of eventRow.row"
-          [style.width]="((100 / 7) * weekEvent.span) + '%'"
-          [style.marginLeft]="((100 / 7) * weekEvent.offset) + '%'"
+          [style.width]="((100 / days.length) * weekEvent.span) + '%'"
+          [style.marginLeft]="((100 / days.length) * weekEvent.offset) + '%'"
           mwlResizable
           [resizeEdges]="{left: weekEvent.event?.resizable?.beforeStart, right: weekEvent.event?.resizable?.afterEnd}"
           [resizeSnapGrid]="{left: getDayColumnWidth(eventRowContainer), right: getDayColumnWidth(eventRowContainer)}"
@@ -72,6 +72,7 @@ import { CalendarEventTimesChangedEvent } from '../../interfaces/calendarEventTi
           <mwl-calendar-week-view-event
             [weekEvent]="weekEvent"
             [tooltipPlacement]="tooltipPlacement"
+            [customTemplate]="eventTemplate"
             (eventClicked)="eventClicked.emit({event: weekEvent.event})">
           </mwl-calendar-week-view-event>
         </div>
@@ -92,6 +93,11 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
   @Input() events: CalendarEvent[] = [];
 
   /**
+   * An array of day indexes (0 = sunday, 1 = monday etc) that will be hidden on the view
+   */
+  @Input() excludeDays: number[] = [];
+
+  /**
    * An observable that when emitted on will re-render the current view
    */
   @Input() refresh: Subject<any>;
@@ -110,6 +116,16 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
    * The start number of the week
    */
   @Input() weekStartsOn: number;
+
+  /**
+   * A custom template to use to replace the header
+   */
+  @Input() headerTemplate: TemplateRef<any>;
+
+  /**
+   * A custom template to use for week view events
+   */
+  @Input() eventTemplate: TemplateRef<any>;
 
   /**
    * Called when a header week day is clicked
@@ -174,7 +190,7 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
     if (this.refresh) {
       this.refreshSubscription = this.refresh.subscribe(() => {
         this.refreshAll();
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       });
     }
   }
@@ -184,11 +200,11 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
    */
   ngOnChanges(changes: any): void {
 
-    if (changes.viewDate) {
+    if (changes.viewDate || changes.excludeDays) {
       this.refreshHeader();
     }
 
-    if (changes.events || changes.viewDate) {
+    if (changes.events || changes.viewDate || changes.excludeDays) {
       this.refreshBody();
     }
 
@@ -214,7 +230,7 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
     };
     const resizeHelper: CalendarResizeHelper = new CalendarResizeHelper(weekViewContainer, this.getDayColumnWidth(weekViewContainer));
     this.validateResize = ({rectangle}) => resizeHelper.validateResize({rectangle});
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   /**
@@ -279,7 +295,7 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
    * @hidden
    */
   getDayColumnWidth(eventRowContainer: HTMLElement): number {
-    return Math.floor(eventRowContainer.offsetWidth / 7);
+    return Math.floor(eventRowContainer.offsetWidth / this.days.length);
   }
 
   /**
@@ -288,13 +304,14 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
   dragStart(weekViewContainer: HTMLElement, event: HTMLElement): void {
     const dragHelper: CalendarDragHelper = new CalendarDragHelper(weekViewContainer, event);
     this.validateDrag = ({x, y}) => !this.currentResize && dragHelper.validateDrag({x, y});
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   private refreshHeader(): void {
     this.days = getWeekViewHeader({
       viewDate: this.viewDate,
-      weekStartsOn: this.weekStartsOn
+      weekStartsOn: this.weekStartsOn,
+      excluded: this.excludeDays
     });
   }
 
@@ -302,7 +319,8 @@ export class CalendarWeekViewComponent implements OnChanges, OnInit, OnDestroy {
     this.eventRows = getWeekView({
       events: this.events,
       viewDate: this.viewDate,
-      weekStartsOn: this.weekStartsOn
+      weekStartsOn: this.weekStartsOn,
+      excluded: this.excludeDays
     });
   }
 

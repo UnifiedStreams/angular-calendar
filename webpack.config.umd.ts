@@ -1,16 +1,20 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as webpack from 'webpack';
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const autoprefixer = require('autoprefixer');
-const postCssFlexibility = require('postcss-flexibility');
-const StyleLintPlugin = require('stylelint-webpack-plugin');
-const angularExternals = require('webpack-angular-externals');
-const dateFnsExternals = require('webpack-date-fns-externals');
-const rxjsExternals = require('webpack-rxjs-externals');
+import * as ExtractTextPlugin from 'extract-text-webpack-plugin';
+import * as autoprefixer from 'autoprefixer';
+import * as postCssFlexibility from 'postcss-flexibility';
+import * as StyleLintPlugin from 'stylelint-webpack-plugin';
+import * as angularExternals from 'webpack-angular-externals';
+import * as dateFnsExternals from 'webpack-date-fns-externals';
+import * as rxjsExternals from 'webpack-rxjs-externals';
+
+const pkg = JSON.parse(fs.readFileSync('./package.json').toString());
 
 export default {
-  entry: __dirname + '/src/index.umd.ts',
+  entry: path.join(__dirname, 'src/index.umd.ts'),
   output: {
-    path: __dirname + '/dist/umd',
+    path: path.join(__dirname, 'dist/umd'),
     filename: 'angular-calendar.js',
     libraryTarget: 'umd',
     library: 'angularCalendar'
@@ -98,6 +102,19 @@ export default {
           ];
         }
       }
+    }),
+    new webpack.BannerPlugin({
+      banner: `
+/**
+ * ${pkg.name} - ${pkg.description}
+ * @version v${pkg.version}
+ * @author ${pkg.author}
+ * @link ${pkg.homepage}
+ * @license ${pkg.license}
+ */
+      `.trim(),
+      raw: true,
+      entryOnly: true
     })
   ]
 };

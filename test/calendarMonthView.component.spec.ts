@@ -3,6 +3,7 @@ import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as moment from 'moment';
 import { expect } from 'chai';
 import { spy } from 'sinon';
@@ -23,8 +24,8 @@ import { CalendarEventTimesChangedEvent } from '../src/interfaces/calendarEventT
 describe('calendarMonthView component', () => {
 
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [CalendarModule]});
-    TestBed.configureCompiler({
+    TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule, CalendarModule],
       providers: [
         DraggableHelper,
         CalendarEventTitleFormatter,
@@ -45,7 +46,30 @@ describe('calendarMonthView component', () => {
     fixture.componentInstance.ngOnChanges({viewDate: {}});
     expect(fixture.componentInstance.view.rowOffsets).to.deep.equal([0, 7, 14, 21, 28]);
     expect(fixture.componentInstance.view.days.length).to.equal(35);
+    expect(fixture.componentInstance.view.totalDaysVisibleInWeek).to.equal(7);
     expect(fixture.componentInstance.view.days[0].date).to.deep.equal(moment('2016-05-29').toDate());
+    fixture.destroy();
+  });
+
+  it('should generate the month view without from week excluded days', () => {
+    const fixture: ComponentFixture<CalendarMonthViewComponent> = TestBed.createComponent(CalendarMonthViewComponent);
+    fixture.componentInstance.viewDate = new Date('2016-01-10');
+    fixture.componentInstance.excludeDays = [0, 6];
+    fixture.componentInstance.ngOnChanges({viewDate: {}});
+    expect(fixture.componentInstance.view.days.length).to.equal(30);
+    expect(fixture.componentInstance.view.totalDaysVisibleInWeek).to.equal(5);
+    expect(fixture.componentInstance.view.rowOffsets).to.deep.equal([0, 5, 10, 15, 20, 25]);
+    expect(fixture.componentInstance.view.days[0].date).to.deep.equal(moment('2015-12-28').toDate());
+    fixture.destroy();
+  });
+
+  it('should update the month view when excluded days changed', () => {
+    const fixture: ComponentFixture<CalendarMonthViewComponent> = TestBed.createComponent(CalendarMonthViewComponent);
+    fixture.componentInstance.viewDate = new Date('2016-01-10');
+    fixture.componentInstance.excludeDays = [0, 1, 2];
+    fixture.componentInstance.ngOnChanges({excludeDays: {}});
+    expect(fixture.componentInstance.view.days.length).to.equal(24);
+    expect(fixture.componentInstance.view.totalDaysVisibleInWeek).to.equal(4);
     fixture.destroy();
   });
 
@@ -345,7 +369,7 @@ describe('calendarMonthView component', () => {
     expect(cells[10].classList.contains('cal-drag-over')).to.be.true;
     const eventAfterDragPosition: ClientRect = event.getBoundingClientRect();
     const movedLeft: number = dragToCellPosition.left - eventStartPosition.left;
-    expect(Math.round(eventAfterDragPosition.left)).to.equal(eventStartPosition.left + movedLeft);
+    expect(eventAfterDragPosition.left).to.equal(eventStartPosition.left + movedLeft);
     const movedTop: number = dragToCellPosition.top - eventStartPosition.top;
     expect(Math.round(eventAfterDragPosition.top)).to.equal(eventStartPosition.top + movedTop);
     triggerDomEvent('mouseup', document.body, {clientX: dragToCellPosition.left, clientY: dragToCellPosition.top});
@@ -412,6 +436,21 @@ describe('calendarMonthView component', () => {
     fixture.destroy();
     expect(eventClickedEvent).to.deep.equal({event: fixture.componentInstance.events[0]});
     expect(dayClickedFired).to.be.false;
+  });
+
+  it('should add helper classes to the header cells', () => {
+    const fixture: ComponentFixture<CalendarMonthViewComponent> = TestBed.createComponent(CalendarMonthViewComponent);
+    fixture.componentInstance.viewDate = new Date('2016-06-27');
+    fixture.componentInstance.ngOnChanges({viewDate: {}});
+    fixture.detectChanges();
+    const headerCells: HTMLElement[] = fixture.nativeElement.querySelectorAll('.cal-header .cal-cell');
+    expect(headerCells[0].classList.contains('cal-past')).to.be.true;
+    expect(headerCells[0].classList.contains('cal-today')).to.be.false;
+    expect(headerCells[0].classList.contains('cal-future')).to.be.false;
+    expect(headerCells[0].classList.contains('cal-weekend')).to.be.true;
+    expect(headerCells[1].classList.contains('cal-weekend')).to.be.false;
+    expect(headerCells[6].classList.contains('cal-weekend')).to.be.true;
+    fixture.destroy();
   });
 
 });

@@ -1,7 +1,7 @@
 import * as webpack from 'webpack';
 import { CheckerPlugin } from 'awesome-typescript-loader';
-const StyleLintPlugin = require('stylelint-webpack-plugin');
-const FixDefaultImportPlugin = require('webpack-fix-default-import-plugin');
+import * as StyleLintPlugin from 'stylelint-webpack-plugin';
+import * as FixDefaultImportPlugin from 'webpack-fix-default-import-plugin';
 
 export default config => {
   config.set({
@@ -26,10 +26,7 @@ export default config => {
 
     webpack: {
       resolve: {
-        extensions: ['.ts', '.js'],
-        alias: {
-          sinon: 'sinon/pkg/sinon'
-        }
+        extensions: ['.ts', '.js']
       },
       module: {
         rules: [{
@@ -42,8 +39,9 @@ export default config => {
           loader: 'awesome-typescript-loader',
           exclude: /node_modules/
         }, {
-          test: /sinon.js$/,
-          loader: 'imports-loader?define=>false,require=>false'
+          test: /\.scss$/,
+          loader: 'style-loader!css-loader!sass-loader',
+          exclude: /node_modules/
         }, {
           enforce: 'post',
           test: /src\/.+\.ts$/,
@@ -66,7 +64,7 @@ export default config => {
           test: /\.(ts|js)($|\?)/i
         }),
         new webpack.ContextReplacementPlugin(
-          /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+          /angular(\\|\/)core(\\|\/)@angular/,
           __dirname + '/src'
         ),
         new webpack.LoaderOptionsPlugin({
@@ -78,10 +76,7 @@ export default config => {
           }
         }),
         new FixDefaultImportPlugin()
-      ],
-      performance: {
-        hints: false
-      }
+      ]
     },
 
     coverageIstanbulReporter: {
@@ -100,6 +95,16 @@ export default config => {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS']
+    browsers: ['PhantomJS'],
+
+    phantomjsLauncher: {
+      // Have phantomjs exit if a ResourceError is encountered (useful if karma exits without killing phantom)
+      exitOnResourceError: true
+    },
+
+    browserConsoleLogOptions: {
+      terminal: true,
+      level: 'log'
+    }
   });
 };

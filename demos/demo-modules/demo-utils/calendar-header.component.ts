@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'mwl-calendar-header',
+  selector: 'mwl-demo-utils-calendar-header',
   template: `
     <div class="row text-center">
       <div class="col-md-4">
@@ -10,20 +10,23 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
             class="btn btn-primary"
             mwlCalendarPreviousView
             [view]="view"
-            [(viewDate)]="viewDate">
+            [(viewDate)]="viewDate"
+            (viewDateChange)="viewDateChange.next(viewDate)">
             Previous
           </div>
           <div
             class="btn btn-secondary"
             mwlCalendarToday
-            [(viewDate)]="viewDate">
+            [(viewDate)]="viewDate"
+            (viewDateChange)="viewDateChange.next(viewDate)">
             Today
           </div>
           <div
             class="btn btn-primary"
             mwlCalendarNextView
             [view]="view"
-            [(viewDate)]="viewDate">
+            [(viewDate)]="viewDate"
+            (viewDateChange)="viewDateChange.next(viewDate)">
             Next
           </div>
         </div>

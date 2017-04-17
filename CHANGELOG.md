@@ -2,6 +2,166 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.13.5"></a>
+## [0.13.5](https://github.com/mattlewis92/angular-calendar/compare/v0.13.4...v0.13.5) (2017-04-14)
+
+
+### Bug Fixes
+
+* **draggable:** ensure text isnt selected on firefox ([ac26e14](https://github.com/mattlewis92/angular-calendar/commit/ac26e14)), closes [#183](https://github.com/mattlewis92/angular-calendar/issues/183)
+
+
+
+<a name="0.13.4"></a>
+## [0.13.4](https://github.com/mattlewis92/angular-calendar/compare/v0.13.3...v0.13.4) (2017-04-10)
+
+
+### Bug Fixes
+
+* **dayView:** fix resizing of events ([18b573f](https://github.com/mattlewis92/angular-calendar/commit/18b573f))
+
+
+
+<a name="0.13.3"></a>
+## [0.13.3](https://github.com/mattlewis92/angular-calendar/compare/v0.13.2...v0.13.3) (2017-04-10)
+
+
+### Bug Fixes
+
+* **dayView:** allow all events to be clicked ([c1c165d](https://github.com/mattlewis92/angular-calendar/commit/c1c165d)), closes [#179](https://github.com/mattlewis92/angular-calendar/issues/179)
+
+
+
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/mattlewis92/angular-calendar/compare/v0.13.1...v0.13.2) (2017-04-10)
+
+
+### Bug Fixes
+
+* **monthView:** handle DST changes in the middle of the month ([fcbca8a](https://github.com/mattlewis92/angular-calendar/commit/fcbca8a))
+
+
+
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/mattlewis92/angular-calendar/compare/v0.13.0...v0.13.1) (2017-04-09)
+
+
+### Bug Fixes
+
+* **monthView:** handle DST changes in the middle of the current month ([28b4be2](https://github.com/mattlewis92/angular-calendar/commit/28b4be2)), closes [#173](https://github.com/mattlewis92/angular-calendar/issues/173)
+
+
+
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/mattlewis92/angular-calendar/compare/v0.12.0...v0.13.0) (2017-04-07)
+
+
+### Features
+
+* **dayView:** allow the day view event template to be customised ([be4d5ee](https://github.com/mattlewis92/angular-calendar/commit/be4d5ee)), closes [#178](https://github.com/mattlewis92/angular-calendar/issues/178)
+
+
+
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/mattlewis92/angular-calendar/compare/v0.11.0...v0.12.0) (2017-04-05)
+
+
+### Features
+
+* **dayView:** allow the all day event template to be customised ([d542d13](https://github.com/mattlewis92/angular-calendar/commit/d542d13))
+* **dayView:** allow the hour segment template to be customised ([149b605](https://github.com/mattlewis92/angular-calendar/commit/149b605)), closes [#172](https://github.com/mattlewis92/angular-calendar/issues/172)
+
+
+
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/mattlewis92/angular-calendar/compare/v0.10.1...v0.11.0) (2017-03-29)
+
+
+### Features
+
+* **weekView:** allow the event template to be customised ([0be434d](https://github.com/mattlewis92/angular-calendar/commit/0be434d)), closes [#171](https://github.com/mattlewis92/angular-calendar/issues/171)
+
+
+
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/mattlewis92/angular-calendar/compare/v0.10.0...v0.10.1) (2017-03-25)
+
+
+### Bug Fixes
+
+* allow events array to be null ([bcdf335](https://github.com/mattlewis92/angular-calendar/commit/bcdf335))
+
+
+
+<a name="0.10.0"></a>
+# [0.10.0](https://github.com/mattlewis92/angular-calendar/compare/v0.9.1...v0.10.0) (2017-03-24)
+
+
+### Features
+
+* **ng4:** upgrade to angular 4 to remove the `<template>` tag deprecation warning ([68a8f39](https://github.com/mattlewis92/angular-calendar/commit/68a8f39)), closes [#163](https://github.com/mattlewis92/angular-calendar/issues/163)
+
+
+### BREAKING CHANGES
+
+* **ng4:** angular 4.0 or higher is now required to use this library. The
+[upgrade](http://angularjs.blogspot.co.uk/2017/03/angular-400-now-available.html) should be seamless
+for most users.
+
+
+
+<a name="0.9.1"></a>
+## [0.9.1](https://github.com/mattlewis92/angular-calendar/compare/v0.9.0...v0.9.1) (2017-03-23)
+
+
+### Bug Fixes
+
+* **draggable:** upgrade draggable dependency to allow touch events ([96145d1](https://github.com/mattlewis92/angular-calendar/commit/96145d1)), closes [#165](https://github.com/mattlewis92/angular-calendar/issues/165)
+
+
+
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/mattlewis92/angular-calendar/compare/v0.8.0...v0.9.0) (2017-03-21)
+
+
+### Features
+
+* **monthView:** allow open day events template to be customised ([ef5a37f](https://github.com/mattlewis92/angular-calendar/commit/ef5a37f))
+* **monthView:** allow the cell templates to be customised ([4603e6b](https://github.com/mattlewis92/angular-calendar/commit/4603e6b))
+* **monthView:** allow the header template to be customised ([53db16b](https://github.com/mattlewis92/angular-calendar/commit/53db16b))
+* **weekView:** allow the header template to be customised ([595a667](https://github.com/mattlewis92/angular-calendar/commit/595a667))
+* expose day, week and month view components so they can be extended with inheritance ([426c287](https://github.com/mattlewis92/angular-calendar/commit/426c287))
+
+
+
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/mattlewis92/angular-calendar/compare/v0.7.3...v0.8.0) (2017-03-12)
+
+
+### Features
+
+* **excludeDays:** add an option to hide days on the month and week views ([e296357](https://github.com/mattlewis92/angular-calendar/commit/e296357))
+
+
+
+<a name="0.7.3"></a>
+## [0.7.3](https://github.com/mattlewis92/angular-calendar/compare/v0.7.2...v0.7.3) (2017-03-04)
+
+
+### Bug Fixes
+
+* loosen angular peer dependency to support angular 4 ([e00c115](https://github.com/mattlewis92/angular-calendar/commit/e00c115))
+* **dayView:** allow dropping of external events ([86e5d06](https://github.com/mattlewis92/angular-calendar/commit/86e5d06)), closes [#150](https://github.com/mattlewis92/angular-calendar/issues/150)
+* **monthView:** add helper classes to the month view header ([0008a83](https://github.com/mattlewis92/angular-calendar/commit/0008a83)), closes [#152](https://github.com/mattlewis92/angular-calendar/issues/152)
+* **weekView:** allow external events to be dropped on the column headers ([83266f7](https://github.com/mattlewis92/angular-calendar/commit/83266f7)), closes [#150](https://github.com/mattlewis92/angular-calendar/issues/150)
+
+
+### Performance Improvements
+
+* improve performance of draggable and resizable events ([71fe9cd](https://github.com/mattlewis92/angular-calendar/commit/71fe9cd)), closes [#149](https://github.com/mattlewis92/angular-calendar/issues/149)
+
+
+
 <a name="0.7.2"></a>
 ## [0.7.2](https://github.com/mattlewis92/angular-calendar/compare/v0.7.1...v0.7.2) (2017-02-03)
 

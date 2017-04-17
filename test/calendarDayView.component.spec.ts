@@ -6,7 +6,8 @@ import {
 } from '@angular/core/testing';
 import * as moment from 'moment';
 import { expect } from 'chai';
-import { DraggableHelper } from 'angular-draggable-droppable';
+import * as sinon from 'sinon';
+import { DraggableHelper, DragAndDropModule } from 'angular-draggable-droppable';
 import {
   CalendarEventTitleFormatter,
   CalendarEvent,
@@ -19,13 +20,19 @@ import {
 import { CalendarDayViewComponent } from './../src/components/day/calendarDayView.component';
 import { Subject } from 'rxjs/Rx';
 import { spy } from 'sinon';
-import { triggerDomEvent } from './util';
+import { triggerDomEvent, ExternalEventComponent } from './util';
 
 describe('CalendarDayViewComponent component', () => {
 
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [CalendarModule]});
-    TestBed.configureCompiler({
+    TestBed.configureTestingModule({
+      imports: [
+        CalendarModule,
+        DragAndDropModule
+      ],
+      declarations: [
+        ExternalEventComponent
+      ],
       providers: [
         DraggableHelper,
         CalendarEventTitleFormatter,
@@ -236,7 +243,7 @@ describe('CalendarDayViewComponent component', () => {
     fixture.componentInstance.eventWidth = 300;
     fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}, eventWidth: {}});
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.cal-event').style.width).to.equal('299px');
+    expect(fixture.nativeElement.querySelector('.cal-event-container').style.width).to.equal('299px');
     fixture.destroy();
   });
 
@@ -267,8 +274,7 @@ describe('CalendarDayViewComponent component', () => {
     fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}});
     fixture.detectChanges();
     document.body.appendChild(fixture.nativeElement);
-    const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event');
-    event.style.position = 'absolute';
+    const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event-container');
     const rect: ClientRect = event.getBoundingClientRect();
     let resizeEvent: CalendarEventTimesChangedEvent;
     fixture.componentInstance.eventTimesChanged.subscribe(event => {
@@ -305,8 +311,7 @@ describe('CalendarDayViewComponent component', () => {
     fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}});
     fixture.detectChanges();
     document.body.appendChild(fixture.nativeElement);
-    const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event');
-    event.style.position = 'absolute';
+    const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event-container');
     const rect: ClientRect = event.getBoundingClientRect();
     let resizeEvent: CalendarEventTimesChangedEvent;
     fixture.componentInstance.eventTimesChanged.subscribe(event => {
@@ -426,13 +431,14 @@ describe('CalendarDayViewComponent component', () => {
       end: moment('2016-06-27').startOf('day').add(6, 'hours').toDate(),
       draggable: true
     }];
+    fixture.componentInstance.eventSnapSize = 1;
     fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}});
     fixture.detectChanges();
     document.body.appendChild(fixture.nativeElement);
     const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event');
     const eventPosition: ClientRect = event.getBoundingClientRect();
     const calendarPosition: ClientRect = fixture.nativeElement.getBoundingClientRect();
-    triggerDomEvent('mousedown', event, {clientY: eventPosition.top + 5, clientX: eventPosition.left + 10});
+    triggerDomEvent('mousedown', event, {clientY: eventPosition.top, clientX: eventPosition.left + 10});
     fixture.detectChanges();
     triggerDomEvent('mousemove', document.body, {clientY: calendarPosition.top, clientX: eventPosition.left + 10});
     fixture.detectChanges();
@@ -462,8 +468,7 @@ describe('CalendarDayViewComponent component', () => {
     fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}});
     fixture.detectChanges();
     document.body.appendChild(fixture.nativeElement);
-    const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event');
-    event.style.position = 'absolute';
+    const event: HTMLElement = fixture.nativeElement.querySelector('.cal-event-container');
     const rect: ClientRect = event.getBoundingClientRect();
     triggerDomEvent('mousedown', document.body, {clientY: rect.top, clientX: rect.left + 10});
     fixture.detectChanges();
@@ -478,6 +483,42 @@ describe('CalendarDayViewComponent component', () => {
     triggerDomEvent('mouseup', document.body, {clientY: rect.top - 60, clientX: rect.left + 10});
     fixture.detectChanges();
     fixture.destroy();
+  });
+
+  it('should allow external events to be dropped on the day view', () => {
+    const fixture: ComponentFixture<CalendarDayViewComponent> = TestBed.createComponent(CalendarDayViewComponent);
+    fixture.componentInstance.viewDate = new Date('2016-06-27');
+    fixture.componentInstance.events = [];
+    fixture.componentInstance.ngOnChanges({viewDate: {}, events: {}});
+    fixture.detectChanges();
+    document.body.appendChild(fixture.nativeElement);
+
+    const externalEventFixture: ComponentFixture<ExternalEventComponent> = TestBed.createComponent(ExternalEventComponent);
+    externalEventFixture.detectChanges();
+    document.body.appendChild(externalEventFixture.nativeElement);
+
+    const event: HTMLElement = externalEventFixture.nativeElement.querySelector('.external-event');
+    const eventPosition: ClientRect = event.getBoundingClientRect();
+
+    const segments: any[] = Array.from(fixture.nativeElement.querySelectorAll('.cal-hour-segment'));
+    const segment: HTMLElement = segments[2].parentNode;
+    const segmentPosition: ClientRect = segment.getBoundingClientRect();
+
+    const eventDropped: sinon.SinonSpy = sinon.spy();
+    fixture.componentInstance.eventTimesChanged.subscribe(eventDropped);
+    triggerDomEvent('mousedown', event, {clientY: eventPosition.top, clientX: eventPosition.left});
+    fixture.detectChanges();
+    triggerDomEvent('mousemove', document.body, {clientY: segmentPosition.top, clientX: segmentPosition.left});
+    fixture.detectChanges();
+    expect(segment.classList.contains('cal-drag-over')).to.be.true;
+    triggerDomEvent('mouseup', document.body, {clientY: segmentPosition.top, clientX: segmentPosition.left});
+    fixture.detectChanges();
+    fixture.destroy();
+    externalEventFixture.destroy();
+    expect(eventDropped).to.have.been.calledWith({
+      event: externalEventFixture.componentInstance.event,
+      newStart: moment('2016-06-27').startOf('day').add(1, 'hours').toDate()
+    });
   });
 
 });

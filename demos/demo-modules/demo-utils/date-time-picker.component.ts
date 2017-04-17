@@ -26,7 +26,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'mwl-date-time-picker',
+  selector: 'mwl-demo-utils-date-time-picker',
   template: `
     <form class="form-inline">
       <div class="form-group">
@@ -82,7 +82,7 @@ export class DateTimePickerComponent implements OnChanges {
   }
 
   updateDate(): void {
-    const newDate: Date = setYear(setMonth(setDate(this.date, this.dateStruct.day), this.dateStruct.month), this.dateStruct.year);
+    const newDate: Date = setYear(setMonth(setDate(this.date, this.dateStruct.day), this.dateStruct.month - 1), this.dateStruct.year);
     this.dateChange.next(newDate);
   }
 
